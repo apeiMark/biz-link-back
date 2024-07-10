@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: register-server
+# ????8080?????8080?
+server:
+  port: 8080
+# ??????
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: false
+    fetch-registry: false

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: biz-common
+server:
+  port: 8082
+# ????????eureka????????8080
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8080/eureka/
