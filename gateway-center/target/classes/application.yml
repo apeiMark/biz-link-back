@@ -14,21 +14,29 @@ spring:
         - id: user-service_route
           uri: lb://user-server
           predicates:
-            - Path=/**
+            - Path=/user-server/**
           filters:
             - name: CircuitBreaker
               args:
                 name: clientCircuitBreaker
                 fallbackUri: forward:/fallback
+            - name: RewritePath
+              args:
+                regexp: /user-server/(?<remaining>.*)   # 将 /user-server/ 后的所有路径捕获到 remaining 变量中
+                replacement: /${remaining}       # 将捕获的路径作为新的路径替换
         - id: common_route
           uri: lb://biz-common
           predicates:
-            - Path=/**
+            - Path=/biz-common/**
           filters:
             - name: CircuitBreaker
               args:
                 name: clientCircuitBreaker
                 fallbackUri: forward:/fallback
+            - name: RewritePath
+              args:
+                regexp: /biz-common/(?<remaining>.*)   # 将 /user/ 后的所有路径捕获到 remaining 变量中
+                replacement: /${remaining}       # 将捕获的路径作为新的路径替换
     circuitbreaker:
       # 配置Resilience4j熔断器
       resilience4j:

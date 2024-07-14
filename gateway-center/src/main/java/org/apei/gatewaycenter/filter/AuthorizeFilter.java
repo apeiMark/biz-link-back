@@ -28,10 +28,10 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
 
     // 定义需要放行的路径列表
     private static final List<String> EXCLUDED_PATHS = Arrays.asList(
-            "/login",
-            "/register",
-            "/image",
-            "/video"
+            "/user-server/login",
+            "/user-server/register",
+            "/biz-common/image",
+            "/biz-common/video"
     );
 
     @Override
