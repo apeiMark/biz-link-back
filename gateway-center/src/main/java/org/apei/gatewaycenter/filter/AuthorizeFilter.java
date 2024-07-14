@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @title: AuthorizeFilter
  * @projectName: xm
@@ -22,15 +25,28 @@ import reactor.core.publisher.Mono;
  */
 @Component
 public class AuthorizeFilter implements GlobalFilter, Ordered {
+
+    // 定义需要放行的路径列表
+    private static final List<String> EXCLUDED_PATHS = Arrays.asList(
+            "/login",
+            "/register",
+            "/image",
+            "/video"
+    );
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         //1. 获取请求
         ServerHttpRequest request = exchange.getRequest();
         //2. 则获取响应
         ServerHttpResponse response = exchange.getResponse();
-        //3. 如果是登录请求则放行
-        if (request.getURI().getPath().contains("/login")) {
-            return chain.filter(exchange);
+        // 获取请求路径
+        String path = request.getURI().getPath();
+        // 检查是否为需要放行的路径
+        for (String excludedPath : EXCLUDED_PATHS) {
+            if (path.startsWith(excludedPath)) {
+                return chain.filter(exchange);
+            }
         }
         //4. 获取请求头
         HttpHeaders headers = request.getHeaders();

@@ -1,10 +1,22 @@
 server:
   port: 8083
-# ?????user-server
+# 服务名称user-server
 spring:
   application:
     name: user-server
-# ????????eureka????????8080
+  datasource:
+    url: jdbc:mysql://8.130.11.173:3306/biz_user_server?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+logging:
+  level:
+    org.apei: debug
+  pattern:
+    dateformat: HH:mm:ss
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml
+# 连接服务注册中心eureka端口号8080
 eureka:
   client:
     service-url:

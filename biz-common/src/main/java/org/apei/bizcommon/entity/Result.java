@@ -7,24 +7,24 @@ public class Result {
 
     private boolean flag;
     private Integer code;
-    private String message;
+    private String msg;
     private Object data;
 
     public Result() {
     }
 
     //增删改
-    public Result(boolean flag, Integer code, String message) {
+    public Result(boolean flag, Integer code, String msg) {
         this.flag = flag;
         this.code = code;
-        this.message = message;
+        this.msg = msg;
     }
 
     //
-    public Result(boolean flag, Integer code, String message, Object data) {
+    public Result(boolean flag, Integer code, String msg, Object data) {
         this.flag = flag;
         this.code = code;
-        this.message = message;
+        this.msg = msg;
         this.data = data;
     }
 

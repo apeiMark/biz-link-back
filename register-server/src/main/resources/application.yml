@@ -1,10 +1,10 @@
 spring:
   application:
     name: register-server
-# ????8080?????8080?
+# 运行端口号8080
 server:
   port: 8080
-# ??????
+# 配置服务注册中心eureka
 eureka:
   instance:
     hostname: localhost

@@ -22,7 +22,7 @@ public class JwtUtil {
     /**
      * 设置有效期为 60 * 60 秒
      */
-    private static final Long JWT_TTL = 10L;
+    private static final Long JWT_TTL = 3600000L;
     /**
      * 设置秘钥明文
      */
@@ -71,8 +71,10 @@ public class JwtUtil {
     public static Claims parseJWT(String  compactJwt) throws Exception {
         // 移除 "Bearer " 前缀
         if (compactJwt.startsWith("Bearer ")) {
+            System.out.println("token以Bearer 开头");
             compactJwt = compactJwt.substring(7);
         }
+        System.out.println(compactJwt);
         SecretKey secretKey = generalKey();
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws( compactJwt).getBody();
     }

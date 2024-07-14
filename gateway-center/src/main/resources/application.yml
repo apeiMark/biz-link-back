@@ -14,14 +14,23 @@ spring:
         - id: user-service_route
           uri: lb://user-server
           predicates:
-            - Path=/login
+            - Path=/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: clientCircuitBreaker
+                fallbackUri: forward:/fallback
+        - id: common_route
+          uri: lb://biz-common
+          predicates:
+            - Path=/**
           filters:
             - name: CircuitBreaker
               args:
                 name: clientCircuitBreaker
                 fallbackUri: forward:/fallback
     circuitbreaker:
-      # ??Resilience4j????
+      # 配置Resilience4j熔断器
       resilience4j:
         instances:
           clientCircuitBreaker:
