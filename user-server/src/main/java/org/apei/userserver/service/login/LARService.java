@@ -1,32 +1,36 @@
 package org.apei.userserver.service.login;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apei.bizcommon.util.IdGeneratorSnowflakeUtil;
 import org.apei.userserver.entity.user.UserAuth;
+import org.apei.userserver.entity.user.UserBase;
 import org.apei.userserver.mapper.user.UserAuthMapper;
 import org.apei.userserver.mapper.user.UserBaseMapper;
 import org.apei.userserver.vo.login.LoginForm;
+import org.apei.userserver.vo.login.RegisterForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class LARService {
     private UserAuthMapper userAuthMapper;
+    private UserBaseMapper userBaseMapper;
 
     @Autowired
-    public LARService(UserAuthMapper userAuthMapper) {
+    public LARService(UserAuthMapper userAuthMapper,UserBaseMapper userBaseMapper) {
         this.userAuthMapper = userAuthMapper;
+        this.userBaseMapper = userBaseMapper;
     }
 
-    public UserAuth getUserAuth(String uid) {
-        // 创建查询包装器
-        QueryWrapper<UserAuth> queryWrapper = new QueryWrapper<>();
-        // 设置查询条件
-        queryWrapper.eq("uid", uid);
-        // 使用 MyBatis Plus 提供的 selectList 方法查询
-
-        return userAuthMapper.selectOne(queryWrapper);
-    }
-
+    /**
+    * @description: 根据用户名登录
+    * @param loginForm
+    * @return java.lang.Long
+    * @author apeiMark
+    * @date 2024/7/16
+    */
 
     public Long loginByUserName(LoginForm loginForm) {
         // 创建查询包装器
@@ -82,5 +86,83 @@ public class LARService {
 
     public Long loginBySinaWeibo(LoginForm loginForm) {
         throw new RuntimeException("暂未开放的登录方式");
+    }
+
+    /**
+     * @description: 用户名注册
+     * @param registerForm
+     * @return java.lang.Long
+     * @author apeiMark
+     * @date 2024/7/16
+     */
+    public Long registerByUserName(RegisterForm registerForm) {
+        // 创建查询包装器
+        QueryWrapper<UserAuth> queryWrapper = new QueryWrapper<>();
+        // 设置查询条件
+        queryWrapper.eq("identifier", registerForm.getIdentifier());
+
+        // 查询数据库中是否存在该用户
+        List<UserAuth> userAuthList = userAuthMapper.selectList(queryWrapper);
+
+        Long uid;
+        if (userAuthList != null && !userAuthList.isEmpty()) {
+            // 检查是否存在与当前注册方式相同的记录
+            for (UserAuth userAuth : userAuthList) {
+                if (userAuth.getIdentityType().equals(registerForm.getIdentityType())) {
+                    throw new RuntimeException("该账号已存在，请直接登录");
+                }
+            }
+            // 如果存在相同 identifier 但不同 identityType 的记录，使用现有的 uid
+            uid = userAuthList.get(0).getUid();
+        } else {
+            // 如果不存在相同 identifier 的记录，生成新的 uid
+            uid = new IdGeneratorSnowflakeUtil().snowflakeId();
+        }
+
+        // 创建新的 UserAuth 实体
+        UserAuth newUserAuth = new UserAuth();
+        newUserAuth.setUid(uid);
+        newUserAuth.setIdentityType(registerForm.getIdentityType());
+        newUserAuth.setIdentifier(registerForm.getIdentifier());
+        newUserAuth.setCertificate(registerForm.getCertificate());
+        // 插入新的 UserAuth 记录
+        userAuthMapper.insert(newUserAuth);
+
+        // 查询 user_base 表中是否存在该 uid
+        UserBase userBase = userBaseMapper.selectById(uid);
+        if (userBase == null) {
+            // 创建新的 UserBase 实体
+            UserBase newUserBase = new UserBase();
+            newUserBase.setUid(uid);
+            // 插入新的 UserBase 记录
+            userBaseMapper.insert(newUserBase);
+        }
+
+        return uid;
+    }
+
+
+    public Long registerByEmail(RegisterForm registerForm) {
+        throw new RuntimeException("暂未开放的注册方式");
+    }
+
+    public Long registerByUserMobileNumber(RegisterForm registerForm) {
+        throw new RuntimeException("暂未开放的注册方式");
+    }
+
+    public Long registerByUserQQ(RegisterForm registerForm) {
+        throw new RuntimeException("暂未开放的注册方式");
+    }
+
+    public Long registerBeWechart(RegisterForm registerForm) {
+        throw new RuntimeException("暂未开放的注册方式");
+    }
+
+    public Long registerByTencentWeibo(RegisterForm registerForm) {
+        throw new RuntimeException("暂未开放的注册方式");
+    }
+
+    public Long registerBySinaWeibo(RegisterForm registerForm) {
+        throw new RuntimeException("暂未开放的注册方式");
     }
 }

@@ -5,6 +5,7 @@ import org.apei.bizcommon.entity.Result;
 import org.apei.bizcommon.util.JwtUtil;
 import org.apei.userserver.service.login.LARService;
 import org.apei.userserver.vo.login.LoginForm;
+import org.apei.userserver.vo.login.RegisterForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -92,6 +93,64 @@ public class LARController {
                 info.put("token",jwt);
                 System.out.println("token: "+jwt);
                 return new Result(true, StatusCodeEnum.OK.getCode(),"登录成功",info);
+            }catch (Exception e){
+                return new Result(false, StatusCodeEnum.OK.getCode(),e.getMessage());
+            }
+        }
+
+    }
+
+
+    /**
+     * @description:
+     * @param registerForm
+     * @return org.apei.bizcommon.entity.Result
+     * @author apeiMark
+     * @date 2024/7/16
+     */
+    @PostMapping("/register")
+    public Result register(@RequestBody RegisterForm registerForm){
+        log.info("RegisterForm: "+registerForm);
+        if(registerForm==null){
+            return new Result(false, StatusCodeEnum.ERROR.getCode(),"注册表单为空，请稍后重试...");
+        } else{
+            try{
+                Long uid;
+                switch(registerForm.getIdentityType()){
+                    case USERNAME :
+                        //用户名注册
+                        uid = LARService.registerByUserName(registerForm);
+                        break;
+                    case EMAIL :
+                        //邮箱注册
+                        uid = LARService.registerByEmail(registerForm);
+                        break;
+                    case MOBILENUMBER :
+                        //手机号注册
+                        uid = LARService.registerByUserMobileNumber(registerForm);
+                        break;
+                    case QQ :
+                        //QQ注册
+                        uid = LARService.registerByUserQQ(registerForm);
+                        break;
+                    case WECHART :
+                        //微信注册
+                        uid = LARService.registerBeWechart(registerForm);
+                        break;
+                    case TENCENTWEIBO :
+                        //腾讯微博注册
+                        uid = LARService.registerByTencentWeibo(registerForm);
+                        break;
+                    case SINAWEIBO :
+                        //新浪微博注册
+                        uid = LARService.registerBySinaWeibo(registerForm);
+                        break;
+                    default:
+                        throw new IllegalStateException("无法解析的注册方式: " + registerForm.getIdentityType());
+                }
+                Map<String,String> info = new HashMap<>();
+                info.put("uid", String.valueOf(uid));
+                return new Result(true, StatusCodeEnum.OK.getCode(),"注册成功",info);
             }catch (Exception e){
                 return new Result(false, StatusCodeEnum.OK.getCode(),e.getMessage());
             }

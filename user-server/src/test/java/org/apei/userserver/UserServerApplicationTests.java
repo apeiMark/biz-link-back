@@ -10,13 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class UserServerApplicationTests {
 
-    @Autowired
-    private LARService LARService;
-
     @Test
     void selectUserAuthByUid() {
-        UserAuth userAuth = LARService.getUserAuth("1811645877530525696");
-        log.info("userAuth: "+userAuth);
+
     }
 
 }

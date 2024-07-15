@@ -1,5 +1,7 @@
 package org.apei.userserver.entity.user;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.sql.Timestamp;
@@ -14,11 +16,8 @@ public class UserBase {
     /**
     * 用户ID
     */
+    @TableId(value = "uid", type = IdType.AUTO)
     private Long uid;
-    /**
-    *用户账号，必须唯一
-    */
-    private String username;
     /**
     *用户昵称
     */
