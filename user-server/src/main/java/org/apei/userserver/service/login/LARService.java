@@ -1,6 +1,7 @@
 package org.apei.userserver.service.login;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apei.bizcommon.util.IdGeneratorSnowflakeUtil;
 import org.apei.userserver.entity.user.UserAuth;
 import org.apei.userserver.entity.user.UserBase;
@@ -8,11 +9,17 @@ import org.apei.userserver.mapper.user.UserAuthMapper;
 import org.apei.userserver.mapper.user.UserBaseMapper;
 import org.apei.userserver.vo.login.LoginForm;
 import org.apei.userserver.vo.login.RegisterForm;
+import org.apei.userserver.vo.user.UserAuthVO;
+import org.apei.userserver.vo.user.UserBaseVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.sql.Timestamp;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @Service
 public class LARService {
     private UserAuthMapper userAuthMapper;
@@ -165,4 +172,63 @@ public class LARService {
     public Long registerBySinaWeibo(RegisterForm registerForm) {
         throw new RuntimeException("暂未开放的注册方式");
     }
+
+    public UserBaseVO getUserInfo(String uid) {
+        System.out.println("uid: "+uid);
+        QueryWrapper<UserBase> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("uid", uid);
+        UserBase userBase = userBaseMapper.selectOne(queryWrapper);
+        log.info("userBase: "+userBase);
+        UserBaseVO userBaseVO = convertUserBaseToVO(userBase);
+        log.info("userBaseVO: "+userBaseVO);
+        return userBaseVO;
+    }
+
+    //  UserAuth to UserAuthVO
+    private UserBaseVO convertUserBaseToVO(UserBase userBase) {
+        UserBaseVO userBaseVO = new UserBaseVO();
+        userBaseVO.setUid(userBase.getUid().toString());
+        userBaseVO.setBirthday(userBase.getBirthday());
+        userBaseVO.setAvatar(userBase.getAvatar());
+        userBaseVO.setGender(userBase.getGender());
+        userBaseVO.setEmail(userBase.getEmail());
+        userBaseVO.setMobile(userBase.getMobile());
+        userBaseVO.setNickName(userBase.getNickName());
+        userBaseVO.setSignature(userBase.getSignature());
+        return userBaseVO;
+    }
+
+    public void editUserInfo(UserBaseVO userBaseVO) {
+        // 将 UserBaseVO 中的 uid 从 String 转换为 Long
+        Long uid = Long.parseLong(userBaseVO.getUid());
+
+        // 使用 convertUserBaseVOToData 方法创建 UserBase 对象
+        UserBase userBase = convertUserBaseVOToData(userBaseVO, uid);
+
+        // 使用 updateById 更新记录
+        userBaseMapper.updateById(userBase);
+
+    }
+
+    /**
+     * 将 UserBaseVO 转换为 UserBase 对象，并设置 uid 和更新时间
+     *
+     * @param userBaseVO 需要转换的 UserBaseVO 对象
+     * @param uid         用户ID
+     * @return UserBase 对象
+     */
+    private UserBase convertUserBaseVOToData(UserBaseVO userBaseVO, Long uid) {
+        UserBase userBase = new UserBase();
+        userBase.setUid(uid);
+        userBase.setNickName(userBaseVO.getNickName());
+        userBase.setGender(userBaseVO.getGender());
+        userBase.setBirthday(userBaseVO.getBirthday());
+        userBase.setSignature(userBaseVO.getSignature());
+        userBase.setMobile(userBaseVO.getMobile());
+        userBase.setEmail(userBaseVO.getEmail());
+        userBase.setAvatar(userBaseVO.getAvatar());
+        userBase.setUpdateTime(new Timestamp(System.currentTimeMillis())); // 设置更新时间
+        return userBase;
+    }
+
 }

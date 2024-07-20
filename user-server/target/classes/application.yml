@@ -5,10 +5,10 @@ spring:
   application:
     name: user-server
   datasource:
-    url: jdbc:mysql://8.130.11.173:3306/biz_user_server?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://8.130.11.173:2032/biz_user_server?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: 123456
+    username: apeimark0930
+    password: 1d8554fe25e195fb7323526af3e1ea97
 logging:
   level:
     org.apei: debug
@@ -21,3 +21,10 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8080/eureka/
+    registry-fetch-interval-seconds: 5  # 客户端从Eureka服务器获取注册信息的间隔时间
+    lease-renewal-interval-in-seconds: 10  # 客户端发送心跳的间隔时间
+    lease-expiration-duration-in-seconds: 30  # 实例过期的时间
+  instance:
+      prefer-ip-address: true
+      lease-renewal-interval-in-seconds: 10  # 确保实例按时发送心跳
+      lease-expiration-duration-in-seconds: 30

@@ -1,4 +1,5 @@
 package org.apei.userserver.controller.login;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apei.bizcommon.constant.StatusCodeEnum;
 import org.apei.bizcommon.entity.Result;
@@ -6,6 +7,8 @@ import org.apei.bizcommon.util.JwtUtil;
 import org.apei.userserver.service.login.LARService;
 import org.apei.userserver.vo.login.LoginForm;
 import org.apei.userserver.vo.login.RegisterForm;
+import org.apei.userserver.vo.request.user.UserInfoRequest;
+import org.apei.userserver.vo.user.UserBaseVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -156,6 +159,36 @@ public class LARController {
             }
         }
 
+    }
+
+    @PostMapping("/info")
+    public Result getUserInfo(@RequestBody UserInfoRequest userInfoRequest){
+        try{
+            String token = userInfoRequest.getToken();
+            // 移除 "Bearer " 前缀
+            if (token.startsWith("Bearer ")) {
+                log.info("token以Bearer 开头");
+                token = token.substring(7);
+            }
+            Claims claims = JwtUtil.parseJWT(token);
+            log.info("token: " + token);
+            String uid = claims.getSubject();
+            log.info("Parsed UID: " + uid);
+            UserBaseVO data = LARService.getUserInfo(uid);
+            return new Result(true, StatusCodeEnum.OK.getCode(),"获取个人信息成功",data);
+        }catch (Exception e){
+            return new Result(false, StatusCodeEnum.OK.getCode(),e.getMessage());
+        }
+    }
+
+    @PostMapping("/edit")
+    public Result editUserInfo(@RequestBody UserBaseVO userBaseVO){
+        try{
+            LARService.editUserInfo(userBaseVO);
+            return new Result(true, StatusCodeEnum.OK.getCode(),"编辑个人信息成功");
+        }catch (Exception e){
+            return new Result(false, StatusCodeEnum.OK.getCode(),e.getMessage());
+        }
     }
 
 }

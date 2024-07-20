@@ -46,9 +46,9 @@ spring:
             slidingWindowSize: 10
             minimumNumberOfCalls: 5
             failureRateThreshold: 50
-            waitDurationInOpenState: 10000
+            waitDurationInOpenState: 20000
             permittedNumberOfCallsInHalfOpenState: 3
-            maxWaitDurationInHalfOpenState: 5000
+            maxWaitDurationInHalfOpenState: 10000
             slidingWindowType: COUNT_BASED
             decorators:
               - name: TimeLimiter
@@ -59,9 +59,15 @@ eureka:
     fetchRegistry: true
     service-url:
       defaultZone: http://localhost:8080/eureka/
+    registry-fetch-interval-seconds: 5  # 客户端从Eureka服务器获取注册信息的间隔时间
+    lease-renewal-interval-in-seconds: 10  # 客户端发送心跳的间隔时间
+    lease-expiration-duration-in-seconds: 30  # 实例过期的时间
+
   instance:
     instance-id: gateway
     prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10  # 确保实例按时发送心跳
+    lease-expiration-duration-in-seconds: 30
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
