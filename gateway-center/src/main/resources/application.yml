@@ -24,6 +24,19 @@ spring:
               args:
                 regexp: /user-server/(?<remaining>.*)   # 将 /user-server/ 后的所有路径捕获到 remaining 变量中
                 replacement: /${remaining}       # 将捕获的路径作为新的路径替换
+        - id: file-service_route
+          uri: lb://file-server
+          predicates:
+            - Path=/file-server/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: clientCircuitBreaker
+                fallbackUri: forward:/fallback
+            - name: RewritePath
+              args:
+                regexp: /file-server/(?<remaining>.*)   # 将 /user-server/ 后的所有路径捕获到 remaining 变量中
+                replacement: /${remaining}       # 将捕获的路径作为新的路径替换
         - id: common_route
           uri: lb://biz-common
           predicates:
@@ -46,9 +59,9 @@ spring:
             slidingWindowSize: 10
             minimumNumberOfCalls: 5
             failureRateThreshold: 50
-            waitDurationInOpenState: 20000
+            waitDurationInOpenState: 200000
             permittedNumberOfCallsInHalfOpenState: 3
-            maxWaitDurationInHalfOpenState: 10000
+            maxWaitDurationInHalfOpenState: 100000
             slidingWindowType: COUNT_BASED
             decorators:
               - name: TimeLimiter

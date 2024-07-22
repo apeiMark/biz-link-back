@@ -1,0 +1,30 @@
+server:
+  port: 8085
+# 服务名称file-server
+spring:
+  application:
+    name: file-server
+  datasource:
+    url: jdbc:mysql://8.130.11.173:2032/biz_file_server?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: apeimark0930
+    password: 1d8554fe25e195fb7323526af3e1ea97
+logging:
+  level:
+    org.apei: debug
+  pattern:
+    dateformat: HH:mm:ss
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml
+# 连接服务注册中心eureka端口号8080
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8080/eureka/
+    registry-fetch-interval-seconds: 5  # 客户端从Eureka服务器获取注册信息的间隔时间
+    lease-renewal-interval-in-seconds: 10  # 客户端发送心跳的间隔时间
+    lease-expiration-duration-in-seconds: 30  # 实例过期的时间
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10  # 确保实例按时发送心跳
+    lease-expiration-duration-in-seconds: 30

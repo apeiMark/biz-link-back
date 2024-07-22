@@ -7,6 +7,7 @@ import org.apei.bizcommon.util.JwtUtil;
 import org.apei.userserver.service.login.LARService;
 import org.apei.userserver.vo.login.LoginForm;
 import org.apei.userserver.vo.login.RegisterForm;
+import org.apei.userserver.vo.request.user.UserInfoByIdRequest;
 import org.apei.userserver.vo.request.user.UserInfoRequest;
 import org.apei.userserver.vo.user.UserBaseVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,6 +179,16 @@ public class LARController {
             return new Result(true, StatusCodeEnum.OK.getCode(),"获取个人信息成功",data);
         }catch (Exception e){
             return new Result(false, StatusCodeEnum.OK.getCode(),e.getMessage());
+        }
+    }
+
+    @PostMapping("/infoById")
+    public UserBaseVO getUserInfo(@RequestBody UserInfoByIdRequest userInfoByIdRequest){
+        try{
+            UserBaseVO data = LARService.getUserInfo(userInfoByIdRequest.getUid());
+            return data;
+        }catch (Exception e){
+            return null;
         }
     }
 

@@ -31,7 +31,8 @@ public class AuthorizeFilter implements GlobalFilter, Ordered {
             "/user-server/login",
             "/user-server/register",
             "/biz-common/image",
-            "/biz-common/video"
+            "/biz-common/video",
+            "/file-server/document/tmp"
     );
 
     @Override
